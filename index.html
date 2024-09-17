@@ -1,9 +1,10 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Link Viewer</title>
+    <title>Video Downloader</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,11 +16,6 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-        }
-        video, iframe {
-            width: 100%;
-            height: 500px;
-            border: 1px solid #ccc;
         }
         #progressContainer {
             width: 100%;
@@ -35,70 +31,58 @@
             background-color: #4caf50;
         }
         #downloadLink {
-            margin-top: 10px;
             display: none; /* Initially hidden */
+            margin-top: 10px;
+            text-decoration: none;
+            padding: 10px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>Video Link Viewer</h1>
-    <p>Enter a direct video file link (e.g., MP4):</p>
+    <h1>Video Downloader</h1>
+    <p>Enter a YouTube or TikTok video link:</p>
     <input type="text" id="videoLink" placeholder="Paste video link here...">
-    <button onclick="loadVideo()">Load Video</button>
-    
-    <video id="localVideoPlayer" controls style="display:none;"></video>
-    <a id="downloadLink" href="#" download>Download Video</a>
+    <button onclick="initiateDownload()">Download Video</button>
     
     <div id="progressContainer">
         <div id="progressBar"></div>
     </div>
+    <a id="downloadLink" download>Download Video</a>
 
     <script>
-        function loadVideo() {
+        function initiateDownload() {
             const link = document.getElementById('videoLink').value.trim();
-            const localVideoPlayer = document.getElementById('localVideoPlayer');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
             const downloadLink = document.getElementById('downloadLink');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
 
-            // Reset UI
-            localVideoPlayer.style.display = 'none';
-            downloadLink.style.display = 'none';
-            progressContainer.style.display = 'none';
-            progressBar.style.width = '0';
+            // Validate link format (basic validation)
+            if (link.includes('youtube.com') || link.includes('youtu.be') || link.includes('tiktok.com')) {
+                // Simulate download process
+                progressContainer.style.display = 'block'; // Show the progress bar
+                let progress = 0;
 
-            // Validate direct video URL (assuming mp4 for simplicity)
-            if (link.endsWith('.mp4')) {
-                localVideoPlayer.src = link; // Set the video source
-                localVideoPlayer.style.display = 'block'; // Show the video player
-                
-                // Prepare the download link
-                downloadLink.href = link;
-                downloadLink.style.display = 'inline'; // Show download link
-                
-                // Simulate download progress (for demo purposes)
-                simulateDownloadProgress(link);
+                const interval = setInterval(() => {
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        progressContainer.style.display = 'none'; // Hide once done
+                        downloadLink.style.display = 'block'; // Show download link
+
+                        // In a real scenario, set the href of downloadLink to the actual video file URL
+                        downloadLink.href = link; // Placeholder logic, this should be server-side logic
+                    } else {
+                        progress += Math.random() * 20 + 10; // Increment progress with some randomness
+                        progressBar.style.width = `${Math.min(progress, 100)}%`; // Update progress bar width
+                    }
+                }, 500); // Update every half second
             } else {
-                alert('Please enter a valid direct video link (e.g., ending with .mp4).');
+                alert('Please enter a valid YouTube or TikTok video link.');
             }
-        }
-
-        function simulateDownloadProgress(url) {
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            progressContainer.style.display = 'block';
-
-            // Simulate progress over 5 seconds
-            let progress = 0;
-            const interval = setInterval(() => {
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    progressContainer.style.display = 'none'; // Hide once done
-                } else {
-                    progress += 20; // Increment progress
-                    progressBar.style.width = `${progress}%`; // Update progress bar width
-                }
-            }, 1000); // Update every second
         }
     </script>
 </body>
