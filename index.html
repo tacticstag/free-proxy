@@ -21,19 +21,42 @@
             height: 500px;
             border: 1px solid #ccc;
         }
+        video {
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+            display: none; /* Hidden by default */
+        }
+        #downloadLink {
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
     </style>
 </head>
 <body>
     <h1>Video Link Viewer</h1>
-    <p>Enter a link to a YouTube, TikTok, Snapchat, or Instagram video:</p>
+    <p>Enter a link to a YouTube, TikTok, Instagram, or Twitter video:</p>
     <input type="text" id="videoLink" placeholder="Paste video link here...">
     <button onclick="loadVideo()">Load Video</button>
+    
     <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+    
+    <video id="localVideoPlayer" controls>
+        Your browser does not support HTML5 video.
+    </video>
+    
+    <a id="downloadLink" href="#" download>Download Video</a>
 
     <script>
         function loadVideo() {
             const link = document.getElementById('videoLink').value.trim();
             const videoFrame = document.getElementById('videoFrame');
+            const downloadLink = document.getElementById('downloadLink');
+            const localVideoPlayer = document.getElementById('localVideoPlayer');
+            
+            videoFrame.src = ''; // Reset the iframe src before loading new video
+            downloadLink.style.display = 'none'; // Hide the download link
+            localVideoPlayer.style.display = 'none'; // Hide the video player
 
             if (link.includes('youtube.com')) {
                 const videoId = new URL(link).searchParams.get('v');
@@ -44,8 +67,21 @@
             } else if (link.includes('instagram.com')) {
                 const postId = link.split('/').pop();
                 videoFrame.src = `https://www.instagram.com/p/${postId}/embed`;
+            } else if (link.includes('twitter.com')) {
+                // For simplicity, just open Twitter video in a new tab.
+                const videoUrl = link; // Assuming the tweet link is the video URL
+                window.open(videoUrl, '_blank'); // Open the video link in a new tab
+                
+                // For demonstration, set the download URL. Replace this with actual handling.
+                downloadLink.href = videoUrl; // Link to download
+                downloadLink.innerText = 'Download Video';
+                downloadLink.style.display = 'inline'; // Show the download link
+                
+                // Trigger video player (a placeholder, no actual video download logic implemented)
+                localVideoPlayer.src = videoUrl; // Assign the video URL to the video player
+                localVideoPlayer.style.display = 'block'; // Show the video player
             } else {
-                alert('Please enter a valid YouTube, TikTok, or Instagram link.');
+                alert('Please enter a valid video link (YouTube, TikTok, Instagram, or Twitter).');
                 videoFrame.src = '';
             }
         }
