@@ -31,6 +31,19 @@
             margin-top: 10px;
             display: none; /* Hidden by default */
         }
+        #progressContainer {
+            margin-top: 10px;
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none; /* Hidden by default */
+        }
+        #progressBar {
+            height: 20px;
+            width: 0;
+            background-color: #4caf50;
+        }
     </style>
 </head>
 <body>
@@ -46,17 +59,53 @@
     </video>
     
     <a id="downloadLink" href="#" download>Download Video</a>
+    
+    <div id="progressContainer">
+        <div id="progressBar"></div>
+    </div>
 
     <script>
+        async function downloadVideo(url) {
+            const response = await fetch(url);
+            const contentLength = response.headers.get('Content-Length');
+            const reader = response.body.getReader();
+            const total = parseInt(contentLength, 10);
+            let loaded = 0;
+            let chunks = [];
+            
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            progressContainer.style.display = 'block'; // Show the progress bar container
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                loaded += value.length;
+
+                // Update progress bar
+                progressBar.style.width = `${(loaded / total) * 100}%`;
+            }
+
+            const blob = new Blob(chunks);
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.style.display = 'inline'; // Show the download link
+            downloadLink.innerText = 'Download Video';
+            progressContainer.style.display = 'none'; // Hide the progress bar after download
+        }
+
         function loadVideo() {
             const link = document.getElementById('videoLink').value.trim();
             const videoFrame = document.getElementById('videoFrame');
-            const downloadLink = document.getElementById('downloadLink');
             const localVideoPlayer = document.getElementById('localVideoPlayer');
-            
+            const downloadLink = document.getElementById('downloadLink');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
             videoFrame.src = ''; // Reset the iframe src before loading new video
             downloadLink.style.display = 'none'; // Hide the download link
-            localVideoPlayer.style.display = 'none'; // Hide the video player
+            progressContainer.style.display = 'none'; // Hide the progress bar
+            progressBar.style.width = '0';
 
             if (link.includes('youtube.com')) {
                 const videoId = new URL(link).searchParams.get('v');
@@ -68,16 +117,9 @@
                 const postId = link.split('/').pop();
                 videoFrame.src = `https://www.instagram.com/p/${postId}/embed`;
             } else if (link.includes('twitter.com')) {
-                // For simplicity, just open Twitter video in a new tab.
                 const videoUrl = link; // Assuming the tweet link is the video URL
                 window.open(videoUrl, '_blank'); // Open the video link in a new tab
-                
-                // For demonstration, set the download URL. Replace this with actual handling.
-                downloadLink.href = videoUrl; // Link to download
-                downloadLink.innerText = 'Download Video';
-                downloadLink.style.display = 'inline'; // Show the download link
-                
-                // Trigger video player (a placeholder, no actual video download logic implemented)
+                downloadVideo(videoUrl); // Start downloading the video
                 localVideoPlayer.src = videoUrl; // Assign the video URL to the video player
                 localVideoPlayer.style.display = 'block'; // Show the video player
             } else {
