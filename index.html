@@ -48,7 +48,7 @@
     <p>Enter a YouTube or TikTok video link:</p>
     <input type="text" id="videoLink" placeholder="Paste video link here...">
     <button onclick="initiateDownload()">Download Video</button>
-    
+
     <div id="progressContainer">
         <div id="progressBar"></div>
     </div>
@@ -61,25 +61,31 @@
             const progressBar = document.getElementById('progressBar');
             const downloadLink = document.getElementById('downloadLink');
 
-            // Validate link format (basic validation)
-            if (link.includes('youtube.com') || link.includes('youtu.be') || link.includes('tiktok.com')) {
-                // Simulate download process
-                progressContainer.style.display = 'block'; // Show the progress bar
-                let progress = 0;
+            // Clear previous values
+            progressBar.style.width = '0';
+            downloadLink.style.display = 'none'; // Hide link initially
 
-                const interval = setInterval(() => {
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        progressContainer.style.display = 'none'; // Hide once done
+            if (link.includes('youtube.com') || link.includes('youtu.be')) {
+                progressContainer.style.display = 'block'; // Show progress bar
+
+                // Simulating a download process
+                fetch(`https://api.y2mate.com/v1/download?url=${encodeURIComponent(link)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Here we assume y2mate returns a downloadable link in its response
+                    if (data.status === 'success') {
+                        const videoUrl = data.result[0].link; // This structure is hypothetical
+                        downloadLink.href = videoUrl; // Set the download link
                         downloadLink.style.display = 'block'; // Show download link
-
-                        // In a real scenario, set the href of downloadLink to the actual video file URL
-                        downloadLink.href = link; // Placeholder logic, this should be server-side logic
+                        progressContainer.style.display = 'none'; // Hide progress bar
                     } else {
-                        progress += Math.random() * 20 + 10; // Increment progress with some randomness
-                        progressBar.style.width = `${Math.min(progress, 100)}%`; // Update progress bar width
+                        alert('Download failed: ' + data.message);
                     }
-                }, 500); // Update every half second
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
             } else {
                 alert('Please enter a valid YouTube or TikTok video link.');
             }
