@@ -1,95 +1,37 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Downloader</title>
+    <title>Basic Browser</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        #progressContainer {
-            width: 100%;
-            background-color: #f3f3f3;
-            border-radius: 5px;
-            overflow: hidden;
-            display: none; /* Initially hidden */
-            margin-top: 10px;
-        }
-        #progressBar {
-            height: 20px;
-            width: 0;
-            background-color: #4caf50;
-        }
-        #downloadLink {
-            display: none; /* Initially hidden */
-            margin-top: 10px;
-            text-decoration: none;
-            padding: 10px;
-            color: white;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        body { font-family: Arial, sans-serif; }
+        #browser-content { margin-top: 20px; padding: 10px; border: 1px solid #ccc; height: 500px; overflow: auto; }
+        #url-bar { width: 80%; }
+        #go-button { padding: 5px; }
     </style>
 </head>
 <body>
-    <h1>Video Downloader</h1>
-    <p>Enter a YouTube or TikTok video link:</p>
-    <input type="text" id="videoLink" placeholder="Paste video link here...">
-    <button onclick="initiateDownload()">Download Video</button>
-
-    <div id="progressContainer">
-        <div id="progressBar"></div>
-    </div>
-    <a id="downloadLink" download>Download Video</a>
+    <h1>My Simple Browser</h1>
+    <input type="text" id="url-bar" placeholder="Enter URL here" />
+    <button id="go-button">Go</button>
+    <div id="browser-content">Content will be displayed here</div>
 
     <script>
-        function initiateDownload() {
-            const link = document.getElementById('videoLink').value.trim();
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const downloadLink = document.getElementById('downloadLink');
-
-            // Clear previous values
-            progressBar.style.width = '0';
-            downloadLink.style.display = 'none'; // Hide link initially
-
-            if (link.includes('youtube.com') || link.includes('youtu.be')) {
-                progressContainer.style.display = 'block'; // Show progress bar
-
-                // Simulating a download process
-                fetch(`https://api.y2mate.com/v1/download?url=${encodeURIComponent(link)}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Here we assume y2mate returns a downloadable link in its response
-                    if (data.status === 'success') {
-                        const videoUrl = data.result[0].link; // This structure is hypothetical
-                        downloadLink.href = videoUrl; // Set the download link
-                        downloadLink.style.display = 'block'; // Show download link
-                        progressContainer.style.display = 'none'; // Hide progress bar
-                    } else {
-                        alert('Download failed: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
-            } else {
-                alert('Please enter a valid YouTube or TikTok video link.');
+        document.getElementById('go-button').addEventListener('click', function () {
+            const url = document.getElementById('url-bar').value;
+            if (url) {
+                fetch(`http://localhost:3000/proxy?url=${encodeURIComponent(url)}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('browser-content').innerHTML = data;
+                    })
+                    .catch(error => {
+                        document.getElementById('browser-content').innerHTML = 'Error fetching page';
+                        console.error(error);
+                    });
             }
-        }
+        });
     </script>
 </body>
 </html>
