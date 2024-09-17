@@ -3,41 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Browser</title>
+    <title>Video Link Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 20px;
-            background-color: #f4f4f4;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         iframe {
             width: 100%;
             height: 500px;
-            border: none;
-            margin-top: 10px;
+            border: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
+    <h1>Video Link Viewer</h1>
+    <p>Enter a link to a YouTube, TikTok, Snapchat, or Instagram video:</p>
+    <input type="text" id="videoLink" placeholder="Paste video link here...">
+    <button onclick="loadVideo()">Load Video</button>
+    <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
 
-<h1>Simple YouTube Viewer</h1>
-<form id="youtube-form" action="#">
-    <label for="videoID">Enter YouTube Video ID:</label>
-    <input type="text" id="videoID" name="videoID" required placeholder="Video ID (e.g., dQw4w9WgXcQ)">
-    <input type="submit" value="Load Video">
-</form>
+    <script>
+        function loadVideo() {
+            const link = document.getElementById('videoLink').value.trim();
+            const videoFrame = document.getElementById('videoFrame');
 
-<iframe id="youtubeFrame" src="" allowfullscreen></iframe>
-
-<script>
-    document.getElementById('youtube-form').onsubmit = function(event) {
-        event.preventDefault();
-        const videoID = document.getElementById('videoID').value;
-        const youtubeURL = `https://www.youtube.com/embed/${videoID}`;
-        document.getElementById('youtubeFrame').src = youtubeURL;
-    };
-</script>
-
+            if (link.includes('youtube.com')) {
+                const videoId = new URL(link).searchParams.get('v');
+                videoFrame.src = `https://www.youtube.com/embed/${videoId}`;
+            } else if (link.includes('tiktok.com')) {
+                const videoId = link.split('/').pop().split('?')[0]; // Extract video ID
+                videoFrame.src = `https://www.tiktok.com/embed/${videoId}`;
+            } else if (link.includes('instagram.com')) {
+                const postId = link.split('/').pop();
+                videoFrame.src = `https://www.instagram.com/p/${postId}/embed`;
+            } else {
+                alert('Please enter a valid YouTube, TikTok, or Instagram link.');
+                videoFrame.src = '';
+            }
+        }
+    </script>
 </body>
 </html>
