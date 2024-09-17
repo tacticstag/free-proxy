@@ -3,65 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Service</title>
+    <title>Mock Browser Interface</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-        iframe {
-            width: 100%;
-            height: 80vh;
-            border: 1px solid #ccc;
+        input[type="url"], input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: white;
+            height: 400px; /* Simulating a browser view */
+            overflow: auto; /* Allow scrolling */
         }
     </style>
 </head>
 <body>
-    <h1>Proxy Service</h1>
-    <form id="urlForm">
-        <label for="url">Enter URL to visit:</label><br>
-        <input type="text" id="url" placeholder="https://example.com" required>
-        <br><br>
-        <input type="submit" value="Go">
-    </form>
-    <iframe id="resultFrame" src="" title="Result"></iframe>
-    <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
 
-    <script>
-        document.getElementById('urlForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const url = document.getElementById('url').value;
-            const errorMessage = document.getElementById('errorMessage');
+<h1>Mock Browser Interface</h1>
+<form id="browser-form" action="#" method="GET">
+    <label for="url">Enter the URL you wish to access:</label>
+    <input type="url" id="url" name="url" required placeholder="https://example.com">
+    <input type="submit" value="Visit URL">
+</form>
 
-            // Ensure valid URL format
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                errorMessage.textContent = 'Please enter a valid URL starting with http:// or https://';
-                return;
-            }
+<div id="result"></div>
 
-            // Clear previous error message
-            errorMessage.textContent = '';
+<script>
+    document.getElementById('browser-form').onsubmit = function(event) {
+        event.preventDefault();
+        const url = document.getElementById('url').value;
 
-            // Use the AllOrigins proxy
-            const proxyUrl = 'https://api.allorigins.win/get?url=';
-            const fullUrl = proxyUrl + encodeURIComponent(url);
+        // This just simulates a click; real browsing requires a proxy backend
+        document.getElementById('result').innerHTML = `<p>Loading content from: ${url}</p>`;
+        // Ideally, fetch and display content from the URL here
+    };
+</script>
 
-            // Fetching the URL
-            fetch(fullUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('resultFrame').srcdoc = data.contents; // Set the content directly for the iframe
-                })
-                .catch(error => {
-                    errorMessage.textContent = 'Error fetching the URL: ' + error.message;
-                });
-        });
-    </script>
 </body>
 </html>
