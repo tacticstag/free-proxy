@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Browser Interface</title>
+    <title>YouTube Browser</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,47 +11,31 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        input[type="url"], input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 10px 0;
-        }
-        input[type="submit"] {
-            padding: 10px 20px;
-            background-color: #5cb85c;
-            color: white;
+        iframe {
+            width: 100%;
+            height: 500px;
             border: none;
-            cursor: pointer;
-        }
-        #result {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: white;
-            height: 400px; /* Simulating a browser view */
-            overflow: auto; /* Allow scrolling */
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-<h1>Mock Browser Interface</h1>
-<form id="browser-form" action="#" method="GET">
-    <label for="url">Enter the URL you wish to access:</label>
-    <input type="url" id="url" name="url" required placeholder="https://example.com">
-    <input type="submit" value="Visit URL">
+<h1>Simple YouTube Viewer</h1>
+<form id="youtube-form" action="#">
+    <label for="videoID">Enter YouTube Video ID:</label>
+    <input type="text" id="videoID" name="videoID" required placeholder="Video ID (e.g., dQw4w9WgXcQ)">
+    <input type="submit" value="Load Video">
 </form>
 
-<div id="result"></div>
+<iframe id="youtubeFrame" src="" allowfullscreen></iframe>
 
 <script>
-    document.getElementById('browser-form').onsubmit = function(event) {
+    document.getElementById('youtube-form').onsubmit = function(event) {
         event.preventDefault();
-        const url = document.getElementById('url').value;
-
-        // This just simulates a click; real browsing requires a proxy backend
-        document.getElementById('result').innerHTML = `<p>Loading content from: ${url}</p>`;
-        // Ideally, fetch and display content from the URL here
+        const videoID = document.getElementById('videoID').value;
+        const youtubeURL = `https://www.youtube.com/embed/${videoID}`;
+        document.getElementById('youtubeFrame').src = youtubeURL;
     };
 </script>
 
